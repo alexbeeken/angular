@@ -9,17 +9,83 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
   </head>
   <body>
+
     <div class="container" ng-controller="StudentsCtrl">
+      <div class="row" ng-show="students.length">
+        <div class="col-md-12"
+          <h4>Search Students</h4>
+          <form class="form-inline" role="form">
+            <div class="form-group">
+              <input ng-model="query" type="text" class="form-control" placeholder="Search">
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- the ng-show means this whole div will only show if there is more than zero studnts -->
       <div class="row">
+
         <div class="col-md-12">
+          <!-- will show first if there are objects in students and if filter returns anything, will show no matches if not -->
+          <h2 ng-show="students.length && filtered.length">Student Lists</h2>
+          <h2 ng-show="students.length && !filtered.length">No Matches</h2>
           <h2>Student List</h2>
           <ul>
-            <li ng-repeat="item in students">
-              {{item.name}}
+            <!-- we use the filter filter, passing in query as an expresion, it will generate a new array of students based on the new exression passed, thanks to two way binding it will automatically know which array to mess with -->
+            <li ng-repeat="item in filtered = (students | filter:query)">
+              <!-- this sets a new property editing equal to true, ng-hide automatically hide the given element when the expression evaluates to true, it hides the button when we click it -->
+              <span ng-click="editing = true" ng-hide="editing">
+                {{item.name}} <a ng-click="deleteStudent(item)">Delete</a>
+              </span>
+              <!-- ng-show works opposite, it reveals the new form then sets editing to false -->
+              <span class="form-group" ng-show="editing" ng-submit="editing = false">
+                <form class="form-inline" role="form">
+                  <!-- the ng-model saves the item.name with the two way data binding-->
+                  <input type="text" class="form-control input-sm" ng-model="item.name" placeholder="edit">
+                  <button class="btn btn-default btn sm" type="submit">Save</button>
+                </form>
+              </span>
             </li>
           </ul>
         </div>
       </div>
+      <div class="col-md-4">
+        <h2>New Student</h2>
+        <form ng-submit="addStudent()" class="form-inline" role="form">
+          <div class="form-group">
+            <input type="text" ng-model="studentName" class="form-control" placeholder="Enter new student">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
     </div>
   </body>
 </html>
+
+<!--
+
+The ng tags we've added are called 'directives'
+
+these are used to extend HTML with dynamic content.
+
+When angular boots it loks at these controllers and attaches behavior to it.
+
+on line 2, this tag tells angular the entire page will be controlled by angular
+(we could add it to just a div if needed)
+
+on line 13, this designates the element for the controller.
+Any directives inside of the div should refer to the parent controller.
+
+on line 18, says: take each element in the students array and refer to it as
+item, like an each or foreach loop.
+
+angular knows where it nees to look for that array because of line 13s tag.
+
+item is just a variable placeholder, it could be anything (students, etc)
+
+On line 26 the ng tag will trigger the addStudent() method on submit.
+
+the ng-model tag on line 28 creates a new property on scope inside the studentcontroller
+
+on line 19 we have an ng-click that triggers a method on click instead of submit
+
+-->
